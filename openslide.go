@@ -1,8 +1,8 @@
 package openslide
 
 /*
-// #cgo CFLAGS: -g -Wall -I/usr/local/Cellar/openslide/3.4.1_5/include/openslide
-// #cgo LDFLAGS: -L. -lopenslide
+#cgo CFLAGS: -g -Wall -I${SRCDIR}/include
+#cgo LDFLAGS: -L. -lopenslide
 #include "openslide.h"
 #include "openslide-features.h"
 */
