@@ -10,15 +10,36 @@ import "C"
 
 import (
 	"bytes"
+	"fmt"
 	"image"
 	"io"
+	"os"
 	"unsafe"
 )
 
+var NOT_FOUND_ERROR = fmt.Errorf("OpenSlideErr: Not Found")
+var NOT_SUPPORTED_ERROR = fmt.Errorf("OpenSlideErr: Format Not Supported")
+var NOT_FOUND_OR_SUPPORTED_ERROR = fmt.Errorf("OpenSlideErr: Format or File Not Supported or Found!")
+
 func openOpenSlide(path string) (*C.openslide_t, error) {
-	//openslide_t * osr
-	pathToSVS := C.CString(path)
-	return C.openslide_open(pathToSVS), nil
+	if _, err := os.Stat(path); err == nil {
+		pathToSVS := C.CString(path)
+		vendor := C.openslide_detect_vendor(pathToSVS)
+		if vendor == nil {
+			return nil, NOT_SUPPORTED_ERROR
+		}
+		osr := C.openslide_open(pathToSVS)
+		if osr != nil {
+			e := C.openslide_get_error(osr)
+			if e != nil {
+				err = fmt.Errorf("OpenSlideErr: %s", C.GoString(e))
+			}
+		}
+		return osr, err
+	} else {
+		return nil, NOT_FOUND_ERROR
+	}
+
 }
 
 func openslide_get_level_count(osr *C.openslide_t) C.int {
@@ -44,7 +65,11 @@ func openslide_read_region(osr *C.openslide_t, level int, x int64, y int64, w in
 }
 
 //-------------------------------------------------
-// Somer helper functions to make life easier
+// Some helper functions to make life easier
+
+func WSI(pathToFile string) (*C.openslide_t, error) {
+	return openOpenSlide(pathToFile)
+}
 
 func NewRGBAImageFromRegionInLevel(osr *C.openslide_t, level int, x, y, width, height int64) (*image.RGBA, error) {
 	var err error

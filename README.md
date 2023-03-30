@@ -5,6 +5,12 @@ Just a Go wrapper around parts of the brilliant openslide libraries. See the og 
 
 ## MacOS
 - `brew install openslide`
+- Test like:
+```
+# fix your path based on the version installed by brew
+CGO_CFLAGS="-g -Wall -I/usr/local/Cellar/openslide/3.4.1_7/include/openslide" CGO_LDFLAGS="-L. -lopenslide" go test .
+```
+
 - Build it like:
 ```
 # adjust to your version and path etc
