@@ -23,5 +23,5 @@ CGO_CFLAGS="-g -Wall -I/usr/local/Cellar/openslide/3.4.1_8/include/openslide" CG
 ```
 # download llvm/gcc from https://github.com/mstorsjo/llvm-mingw/releases
 # download openslide from https://openslide.org/download/#windows-binaries
-CG_ENABLED=1 CC="C:\Users\Ali\Downloads/llvm-mingw-20230919-msvcrt-x86_64/bin/gcc.exe" go build -o openslide-win .
+CGO_ENABLED=1 CC="C:\Users\Ali\Downloads/llvm-mingw-20230919-msvcrt-x86_64/bin/gcc.exe" go build -o openslide-win .
 ```

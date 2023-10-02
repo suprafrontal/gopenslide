@@ -4,6 +4,10 @@
 
 package gopenslide
 
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <stdint.h>
+
 /*
 #cgo CFLAGS: -g -Wall -I${SRCDIR}/include/openslide
 #cgo LDFLAGS: -L. -lopenslide
@@ -29,6 +33,8 @@ type WSI struct {
 	osr *C.openslide_t
 }
 
+type KVPair map[string]string
+
 func OpenWSI(pathToFile string) (WSI, error) {
 	osr, err := openOpenSlide(pathToFile)
 	if err != nil {
@@ -52,6 +58,28 @@ func (wsi *WSI) GetLevelDownsample(level int) float64 {
 func (wsi *WSI) ReadRegion(level int, x int64, y int64, w int64, h int64) ([]byte, error) {
 	return openslide_read_region(wsi.osr, level, x, y, w, h)
 }
+
+func (wsi *WSI) GetPropertyNames() []string {
+	return openslide_get_property_names(wsi.osr)
+}
+
+func (wsi *WSI) GetPropertyValue(name string) string {
+	return openslide_get_property_value(wsi.osr, name)
+}
+
+func (wsi *WSI) GetPropertyKVPairs() []KVPair {
+	kvPairs := []KVPair{}
+	for _, name := range wsi.GetPropertyNames() {
+		kvPairs = append(kvPairs, KVPair{name: wsi.GetPropertyValue(name)})
+	}
+	return kvPairs
+}
+
+func (wsi *WSI) Close() {
+	C.openslide_close(wsi.osr)
+}
+
+//-------------------------------------------------
 
 func openOpenSlide(path string) (*C.openslide_t, error) {
 	if _, err := os.Stat(path); err == nil {
@@ -98,6 +126,21 @@ func openslide_read_region(osr *C.openslide_t, level int, x int64, y int64, w in
 	hC := C.int64_t(h)
 	C.openslide_read_region(osr, (*C.uint32_t)(unsafe.Pointer(&buf[0])), xC, yC, levelC, wC, hC)
 	return buf, nil
+}
+
+func openslide_get_property_names(osr *C.openslide_t) []string {
+	cPropNames := C.openslide_get_property_names(osr)
+	names := []string{}
+	for _, s := range (*[1 << 28]*C.char)(unsafe.Pointer(cPropNames))[:2:2] {
+		names = append(names, C.GoString(s))
+	}
+	return names
+}
+
+func openslide_get_property_value(osr *C.openslide_t, name string) string {
+	nameC := C.CString(name)
+	valueC := C.openslide_get_property_value(osr, nameC)
+	return C.GoString(valueC)
 }
 
 //-------------------------------------------------

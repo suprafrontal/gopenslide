@@ -106,4 +106,20 @@ func Test_WSI(t *testing.T) {
 	if region[0] != 255 {
 		t.Fatalf("expected this to be 0 but it is %d", region[0])
 	}
+
+	props := wsi.GetPropertyNames()
+	if len(props) != 2 {
+		t.Fatalf("expected this to be 2 but it is %d", len(props))
+	}
+
+	//aperio.AppMag: 40
+	//aperio.DSR ID: homer
+
+	for _, p := range props {
+		v := wsi.GetPropertyValue(p)
+		if v == "" {
+			t.Fatalf("expected this to be something but it is empty")
+		}
+		fmt.Printf("%s: %s\n", p, v)
+	}
 }
