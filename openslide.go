@@ -1,7 +1,11 @@
-package openslide
+// go build -o libopenslide.so -buildmode=c-shared openslide.go
+//go:build linux || darwin || windows
+// +build linux darwin windows
+
+package gopenslide
 
 /*
-#cgo CFLAGS: -g -Wall -I${SRCDIR}/include
+#cgo CFLAGS: -g -Wall -I${SRCDIR}/include/openslide
 #cgo LDFLAGS: -L. -lopenslide
 #include "openslide.h"
 #include "openslide-features.h"

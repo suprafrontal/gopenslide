@@ -1,4 +1,4 @@
-package openslide
+package gopenslide
 
 import (
 	"fmt"

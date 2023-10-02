@@ -1,3 +1,3 @@
-module github.com/suprafrontal/openslide
+module github.com/suprafrontal/gopenslide
 
-go 1.20
+go 1.21
