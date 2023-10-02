@@ -25,6 +25,34 @@ var NOT_FOUND_ERROR = fmt.Errorf("OpenSlideErr: Not Found")
 var NOT_SUPPORTED_ERROR = fmt.Errorf("OpenSlideErr: Format Not Supported")
 var NOT_FOUND_OR_SUPPORTED_ERROR = fmt.Errorf("OpenSlideErr: Format or File Not Supported or Found!")
 
+type WSI struct {
+	osr *C.openslide_t
+}
+
+func OpenWSI(pathToFile string) (WSI, error) {
+	osr, err := openOpenSlide(pathToFile)
+	if err != nil {
+		return WSI{}, err
+	}
+	return WSI{osr}, nil
+}
+
+func (wsi *WSI) GetLevelCount() int {
+	return int(openslide_get_level_count(wsi.osr))
+}
+
+func (wsi *WSI) GetLevelDimensions(level int) (int64, int64, error) {
+	return openslide_get_level_dimensions(wsi.osr, level)
+}
+
+func (wsi *WSI) GetLevelDownsample(level int) float64 {
+	return float64(openslide_get_level_downsample(wsi.osr, level))
+}
+
+func (wsi *WSI) ReadRegion(level int, x int64, y int64, w int64, h int64) ([]byte, error) {
+	return openslide_read_region(wsi.osr, level, x, y, w, h)
+}
+
 func openOpenSlide(path string) (*C.openslide_t, error) {
 	if _, err := os.Stat(path); err == nil {
 		pathToSVS := C.CString(path)
@@ -43,7 +71,6 @@ func openOpenSlide(path string) (*C.openslide_t, error) {
 	} else {
 		return nil, NOT_FOUND_ERROR
 	}
-
 }
 
 func openslide_get_level_count(osr *C.openslide_t) C.int {
@@ -55,6 +82,11 @@ func openslide_get_level_dimensions(osr *C.openslide_t, level int) (int64, int64
 	levelC := C.int(level)
 	C.openslide_get_level_dimensions(osr, levelC, &w, &h)
 	return int64(w), int64(h), nil
+}
+
+func openslide_get_level_downsample(osr *C.openslide_t, level int) float64 {
+	levelC := C.int(level)
+	return float64(C.openslide_get_level_downsample(osr, levelC))
 }
 
 func openslide_read_region(osr *C.openslide_t, level int, x int64, y int64, w int64, h int64) ([]byte, error) {
@@ -70,10 +102,6 @@ func openslide_read_region(osr *C.openslide_t, level int, x int64, y int64, w in
 
 //-------------------------------------------------
 // Some helper functions to make life easier
-
-func WSI(pathToFile string) (*C.openslide_t, error) {
-	return openOpenSlide(pathToFile)
-}
 
 func NewRGBAImageFromRegionInLevel(osr *C.openslide_t, level int, x, y, width, height int64) (*image.RGBA, error) {
 	var err error
