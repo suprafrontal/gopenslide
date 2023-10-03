@@ -32,3 +32,12 @@ CGO_CFLAGS="-g -Wall -I/usr/local/Cellar/openslide/3.4.1_8/include/openslide" CG
 # Win64 version with LLVM/Clang/LLDB etc
 PATH=$PATH:$(pwd)/lib  CGO_ENABLED=1  CC="/c/Users/Ali/Downloads/mingw64/bin/gcc.exe"  go test .
 ```
+
+
+# License (OpenSlide)
+OpenSlide is released under the terms of the GNU Lesser General Public License, version 2.1.
+
+OpenSlide is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+
+# License (This wrapper)
+gophenslide is released under MIT license.
