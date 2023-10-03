@@ -10,7 +10,7 @@ package gopenslide
 
 /*
 #cgo CFLAGS: -g -Wall -I${SRCDIR}/include/openslide
-#cgo LDFLAGS: -L. -lopenslide
+#cgo LDFLAGS: -L${SRCDIR}/lib  -llibopenslide-0
 #include "openslide.h"
 #include "openslide-features.h"
 */

@@ -65,6 +65,7 @@ func Test_WSI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("What now %v", err)
 	}
+
 	if wsi.osr == nil {
 		t.Fatalf("expected this not to be nil but it is ")
 	}
